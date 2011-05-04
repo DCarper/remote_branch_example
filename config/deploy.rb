@@ -19,7 +19,7 @@ set :runner, user
 
 set :rails_env, 'production'
 
-set :deploy_to, "~dancarper/code/deployments/"
+set :deploy_to, "~dancarper/code/deployments/new"
 
 
 #$:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
@@ -28,6 +28,11 @@ set :deploy_to, "~dancarper/code/deployments/"
 
 task :production do
   
+end
+
+task :testy do
+	puts current_path;
+	puts shared_path;
 end
 
 namespace :deploy do
@@ -98,7 +103,7 @@ namespace :deploy do
       end
 
     puts "#{migrate_target} => #{directory}"
-    run "cd #{directory}; #{rake} RAILS_ENV=#{rails_env} #{migrate_env} db:migrate; git commit -a -v -m 'commit the schema file'"
+    run "cd #{directory}; #{rake} RAILS_ENV=#{rails_env} #{migrate_env} db:migrate; git commit -m 'schema.rb updates'"
   end
 
   desc <<-DESC
