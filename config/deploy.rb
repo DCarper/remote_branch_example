@@ -1,16 +1,15 @@
 require 'capistrano_colors'
-require 'capistrano/ext/multistage'
 
-set :user, "admin"
+set :user, "dancarper"
 
 default_run_options[:pty] = true
-set :repository, "..."
+set :repository, "git@github.com:DCarper/new_deploy.git"
 
 set :scm, :git
-set :branch, "..."
+set :branch, "master"
 
-set :port, "thirty_one"
-set :domain, "crazy"
+set :port, "22"
+set :domain, "192.168.2.2"
 
 role :web, domain # Your HTTP server, Apache/etc
 role :app, domain # This may be the same as your `Web` server
@@ -18,10 +17,10 @@ role :db, domain, :primary => true # This is where Rails migrations will run
 
 set :runner, user
 
-set :use_sudo, false
 set :rails_env, 'production'
 
-set :deploy_to, "/var/www/#{application}/#{rails_env}"
+set :deploy_to, "~dancarper/code/deployments/"
+
 
 #$:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
 #require "rvm/capistrano"                  # Load RVM's capistrano plugin.
@@ -44,7 +43,7 @@ namespace :deploy do
 
     # read the latest deploy number from the shared DEPLOY file, increment, and write it back
     #
-    # if it fails then the number will be -10
+    # if it fails then the number will be 0
     #
     new_num = next_branch_num()
     
