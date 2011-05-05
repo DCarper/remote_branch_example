@@ -6,6 +6,8 @@ default_run_options[:pty] = true
 set :repository, "git@github.com:DCarper/new_deploy.git"
 
 set :scm, :git
+set :scm_command, "/usr/local/git/bin/git"
+
 set :branch, "master"
 
 set :port, "22"
@@ -17,9 +19,7 @@ role :db, domain, :primary => true # This is where Rails migrations will run
 
 set :runner, user
 
-set :rails_env, 'production'
-
-set :deploy_to, "~dancarper/code/deployments/new"
+set :deploy_to, "~dancarper/code/deployments/remote_branch"
 
 
 #$:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
@@ -36,6 +36,14 @@ task :testy do
 end
 
 namespace :deploy do
+
+	desc "setup"
+	task :setup do
+		run "mkdir -p #{shared_path}"
+		run "touch #{shared_path}/DEPLOY"
+		run "echo 0 > #{shared_path}/DEPLOY"
+		run "#{scm_command} clone #{repository} #{current_path}"
+	end
     
   desc "Deploy aw yeaaah!"
   task :default do
@@ -60,17 +68,17 @@ namespace :deploy do
     on_rollback { rollback }
 
     # update the origin
-    run "cd #{current_path}; git fetch origin;"
+    run "cd #{current_path}; #{scm_command} fetch origin;"
 
     # create a new tracking branch for the current version of that branch
-    run "cd #{current_path}; git branch -f --track #{new_branch_name} origin/#{branch};"
+    run "cd #{current_path}; #{scm_command} branch -f --track #{new_branch_name} origin/#{branch};"
 
     #switch to it
-    run "cd #{current_path}; git checkout #{new_branch_name};"
+    run "cd #{current_path}; #{scm_command} checkout #{new_branch_name};"
 
     #delete the 10-ago-branch ... don't fail if it doesn't exist.
     begin
-      run "cd #{current_path}; git branch -D #{branch_for_delete} >/dev/null 2>&1"
+      run "cd #{current_path}; #{scm_command} branch -D #{branch_for_delete} >/dev/null 2>&1"
     rescue
     end
   end
@@ -84,27 +92,12 @@ namespace :deploy do
   DESC
   task :cold do
     update
-    restart
   end
 
   desc <<-DESC
     always current_path
   DESC
-  task :migrate, :roles => :db, :only => { :primary => true } do
-    rake = fetch(:rake, "rake")
-    rails_env = fetch(:rails_env, "production")
-    migrate_env = fetch(:migrate_env, "")
-    migrate_target = fetch(:migrate_target, :latest)
-
-    directory = case migrate_target.to_sym
-      when :current then current_path
-      when :latest  then current_path
-      else   raise ArgumentError, "unknown migration target #{migrate_target.inspect}"
-      end
-
-    puts "#{migrate_target} => #{directory}"
-    run "cd #{directory}; #{rake} RAILS_ENV=#{rails_env} #{migrate_env} db:migrate; git commit -m 'schema.rb updates'"
-  end
+  task :migrate, :roles => :db, :only => { :primary => true } do ; end
 
   desc <<-DESC
     no-op with gitty deployment
@@ -121,7 +114,7 @@ namespace :deploy do
 			old_branch_name = "#{branch}#{old_num}"
 
 			# switch to the last branch
-			run "cd #{current_path}; git checkout #{old_branch_name}"
+			run "cd #{current_path}; #{scm_command} checkout #{old_branch_name}"
 
 			# restart
 			deploy.restart
@@ -135,6 +128,11 @@ namespace :deploy do
 
   desc "no op"
   task :cleanup do ; end
+
+  [:start, :stop, :restart].each do |t|
+    desc "#{t} task is a no-op with mod_rails"
+    task t, :roles => :app do ; end
+  end
   
 end
 
