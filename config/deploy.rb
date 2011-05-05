@@ -11,7 +11,7 @@ set :scm_command, "/usr/local/git/bin/git"
 set :branch, "master"
 
 set :port, "22"
-set :domain, "192.168.2.2"
+set :domain, "192.168.0.239"
 
 role :web, domain # Your HTTP server, Apache/etc
 role :app, domain # This may be the same as your `Web` server
