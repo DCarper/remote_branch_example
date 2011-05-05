@@ -15,7 +15,7 @@ set :deploy_to, "~dancarper/code/deployments/#{application}"
 set :deploy_via, :remote_cache
 
 set :port, "22"
-set :domain, "192.168.2.2"
+set :domain, "192.168.0.239"
 
 role :web, domain                         # Your HTTP server, Apache/etc
 role :app, domain                         # This may be the same as your `Web` server
