@@ -3,7 +3,7 @@ require 'capistrano_colors'
 set :user, "dancarper"
 
 default_run_options[:pty] = true
-set :repository, "git@github.com:DCarper/new_deploy.git"
+set :repository, "git@github.com:DCarper/remote_branch_example.git"
 
 set :scm, :git
 set :scm_command, "/usr/local/git/bin/git"
@@ -20,7 +20,7 @@ role :db, domain, :primary => true # This is where Rails migrations will run
 set :runner, user
 
 set :application, 'spring_cleaning'
-set :deploy_to, "~dancarper/code/deployments/#{application}"
+set :deploy_to, "~dancarper/code/deployments/spring_cleaning"
 
 
 #$:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory to the load path.
@@ -47,7 +47,7 @@ namespace :deploy do
 
   desc "Setup a GitHub-style deployment."
   task :setup, :except => { :no_release => true } do
-    run "git clone #{repository} #{current_path}"
+    run "#{scm_command} clone #{repository} #{current_path}"
   end
 
   desc "Update the deployed code."
@@ -55,12 +55,11 @@ namespace :deploy do
     run "cd #{current_path}; git fetch origin; git reset --hard #{branch}"
   end
 
-  desc "Rollback a single commit."
-  task :rollback, :except => { :no_release => true } do
-    set :branch, "HEAD^"
-    default
-  end
-	  desc <<-DESC
+	# BROKEN MUST HIT ROLLBACK NAMESPACE
+  #desc "Rollback a single commit."
+  #task :rollback, :except => { :no_release => true } do ; end
+
+	desc <<-DESC
     Deploys and starts a `cold' application. This is useful if you have not \
     deployed your application before, or if your application is (for some \
     other reason) not currently running. It will deploy the code, run any \
