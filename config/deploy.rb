@@ -1,7 +1,7 @@
 require 'capistrano_colors'
 set :user, "dancarper"
 
-set :application, "remote_cache"
+set :application, "default"
 default_run_options[:pty] = true
 set :repository,  "git@github.com:DCarper/example_old_deploy.git"
 
@@ -12,7 +12,7 @@ set :scm_command, "/usr/local/git/bin/git"
 set :branch, "master"
 
 set :deploy_to, "~dancarper/code/deployments/#{application}"
-set :deploy_via, :remote_cache
+set :git_shallow_clone, 1
 
 set :port, "22"
 set :domain, "192.168.2.2"
