@@ -3,7 +3,7 @@ set :user, "dancarper"
 
 set :application, "default"
 default_run_options[:pty] = true
-set :repository,  "git@github.com:DCarper/example_old_deploy.git"
+set :repository,  "git@github.com:DCarper/remote_branch_example.git"
 
 
 set :scm, :git
