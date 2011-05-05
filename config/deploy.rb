@@ -3,7 +3,7 @@ require 'capistrano_colors'
 set :user, "dancarper"
 
 default_run_options[:pty] = true
-set :repository, "git@github.com:DCarper/new_deploy.git"
+set :repository, "git@github.com:DCarper/remote_branch_example.git"
 
 set :scm, :git
 set :scm_command, "/usr/local/git/bin/git"
